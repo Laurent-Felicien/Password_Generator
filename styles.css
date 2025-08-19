@@ -17,9 +17,9 @@ h1 {
     text-shadow: 0 0 10px #00f0ff;
 }
 
-password {
+#password {
     background: #162447;
-    border: none;
+    border: navajowhite;
     padding: 12px 20px;
     font-size: 1.2rem;
     color: #fff;
@@ -28,7 +28,33 @@ password {
     margin-bottom: 20px;
 }
 
-btn-generate {
+/* Container pour les boutons */
+.actions {
+    display: flex;
+    gap: 10px;
+    /* espace entre les boutons */
+    margin-bottom: 20px;
+}
+
+
+#btn-copy {
+    background: #00f0ff;
+    color: #1a1a2e;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btn-copy:hover {
+    background: #00cfff;
+    /* léger éclaircissement au survolement */
+}
+
+
+#btn-generate {
     background: #e43f5a;
     color: #fff;
     border: none;
