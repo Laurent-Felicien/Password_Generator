@@ -514,6 +514,87 @@ h1 {
 }
 
 .card-author a:hover { opacity: 0.75; }
+
+/* ============================================================
+   MODAL MENTIONS LÉGALES
+   ============================================================ */
+.legal-modal {
+  display: none; /* caché par défaut */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+/* Quand l'URL contient #legal-modal, on affiche la modal */
+.legal-modal:target {
+  display: flex;
+}
+
+.legal-content {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 32px;
+  max-width: 480px;
+  width: 100%;
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: cardAppear 0.3s ease both;
+}
+
+.legal-content h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 20px;
+}
+
+.legal-content h3 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin: 16px 0 6px;
+}
+
+.legal-content p {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.legal-content a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.legal-content a:hover { text-decoration: underline; }
+
+.legal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: color var(--transition), background var(--transition);
+}
+
+.legal-close:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
 @media (max-width: 480px) {
   .card-body { padding: 24px 20px 20px; }
   .checkboxes { grid-template-columns: 1fr; }
