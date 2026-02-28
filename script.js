@@ -226,3 +226,7 @@ document.addEventListener("keydown", (e) => {
 // pour que l'utilisateur voie directement le résultat.
 // ============================================================
 afficherMotDePasse();
+
+// Année dynamique dans le footer
+const elAnnee = document.getElementById("annee");
+if (elAnnee) elAnnee.textContent = new Date().getFullYear();

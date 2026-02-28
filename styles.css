@@ -356,7 +356,9 @@ h1 {
 }
 
 /* ============================================================
-   BOUTON PRINCIPAL
+   BOUTON PRINCIPAL + EFFET ÉLECTRIQUE
+   L'effet fonctionne avec 4 pseudo-éléments (top, bottom, left, right)
+   qui simulent un courant électrique qui parcourt le contour du bouton.
    ============================================================ */
 #btn-generate {
   width: 100%;
@@ -370,32 +372,93 @@ h1 {
   font-weight: 700;
   cursor: pointer;
   letter-spacing: 0.3px;
-  transition: all var(--transition);
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
   position: relative;
-  overflow: hidden;
-}
-
-/* Effet de brillance au survol */
-#btn-generate::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
-  transform: translateX(-100%);
-  transition: transform 0.4s ease;
+  overflow: hidden; /* cache les lignes qui débordent */
 }
 
 #btn-generate:hover {
   background: #4ae868;
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(57,211,83,0.3);
-}
-
-#btn-generate:hover::after {
-  transform: translateX(100%);
+  box-shadow: 0 4px 20px rgba(57,211,83,0.35);
 }
 
 #btn-generate:active { transform: translateY(0); }
+
+/* ---- Les 4 lignes électriques ---- */
+/* Chaque .electric est une ligne fine qui glisse sur un côté du bouton */
+.electric {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 2px;
+  opacity: 0;         /* invisible par défaut */
+  filter: blur(1px);  /* légère lueur */
+}
+
+/* Ligne du haut — glisse de gauche à droite */
+.electric.top {
+  top: 0; left: -60%;
+  width: 60%; height: 2px;
+  animation: electric-top 2.4s linear infinite;
+  animation-delay: 0s;
+}
+
+/* Ligne du bas — glisse de droite à gauche */
+.electric.bottom {
+  bottom: 0; right: -60%;
+  width: 60%; height: 2px;
+  animation: electric-bottom 2.4s linear infinite;
+  animation-delay: 1.2s; /* décalée pour alterner avec le haut */
+}
+
+/* Ligne gauche — glisse de bas en haut */
+.electric.left {
+  left: 0; bottom: -100%;
+  width: 2px; height: 100%;
+  animation: electric-left 2.4s linear infinite;
+  animation-delay: 0.6s;
+}
+
+/* Ligne droite — glisse de haut en bas */
+.electric.right {
+  right: 0; top: -100%;
+  width: 2px; height: 100%;
+  animation: electric-right 2.4s linear infinite;
+  animation-delay: 1.8s;
+}
+
+/* ---- Animations ---- */
+/* top : entre par la gauche, sort par la droite */
+@keyframes electric-top {
+  0%   { left: -60%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* bottom : entre par la droite, sort par la gauche */
+@keyframes electric-bottom {
+  0%   { right: -60%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { right: 100%; opacity: 0; }
+}
+
+/* left : entre par le bas, sort par le haut */
+@keyframes electric-left {
+  0%   { bottom: -100%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { bottom: 100%; opacity: 0; }
+}
+
+/* right : entre par le haut, sort par le bas */
+@keyframes electric-right {
+  0%   { top: -100%; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
 
 /* Animation "pulse" au clic */
 #btn-generate.pulse {
@@ -430,9 +493,27 @@ h1 {
   border-radius: 20px;
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+/* Signature auteur */
+.card-author {
+  padding: 10px 28px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: rgba(255,255,255,0.01);
+}
+
+.card-author a {
+  color: var(--green);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity var(--transition);
+}
+
+.card-author a:hover { opacity: 0.75; }
 @media (max-width: 480px) {
   .card-body { padding: 24px 20px 20px; }
   .checkboxes { grid-template-columns: 1fr; }
