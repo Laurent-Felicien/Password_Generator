@@ -1,70 +1,440 @@
+/* ============================================================
+   Password Generator — v1.0.0
+   Thème : Terminal / Cybersécurité
+   Ambiance "hacker propre" — noir profond + vert électrique
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #090c0f;       /* noir profond */
+  --card-bg:     #0d1117;       /* fond de la carte */
+  --card-border: #21262d;       /* bordure subtile */
+  --green:       #39d353;       /* vert terminal principal */
+  --green-dim:   #1a4a25;       /* vert sombre pour fonds */
+  --green-glow:  rgba(57,211,83,0.15);
+  --red:         #ff5f57;       /* point rouge fenêtre terminal */
+  --yellow:      #febc2e;       /* point jaune */
+  --text:        #e6edf3;       /* texte principal */
+  --text-muted:  #7d8590;       /* texte secondaire */
+  --input-bg:    #010409;       /* fond de l'input */
+  --radius:      12px;
+  --transition:  0.2s ease;
+}
+
+/* ============================================================
+   FOND ANIMÉ — grille de points façon matrix
+   ============================================================ */
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #1a1a2e;
-    color: #f1f1f1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grille de fond */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(57,211,83,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57,211,83,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Halo vert au centre */
+body::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(57,211,83,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   CARTE PRINCIPALE
+   ============================================================ */
+main.card {
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 480px;
+  box-shadow:
+    0 0 0 1px rgba(57,211,83,0.05),
+    0 16px 48px rgba(0,0,0,0.5),
+    0 0 80px rgba(57,211,83,0.04);
+  animation: cardAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes cardAppear {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---- Header terminal ---- */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.terminal-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dot.red    { background: var(--red); }
+.terminal-dot.yellow { background: var(--yellow); }
+.terminal-dot.green  { background: var(--green); }
+
+.terminal-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-left: 8px;
+}
+
+/* ---- Body ---- */
+.card-body {
+  padding: 32px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 h1 {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #00f0ff;
-    text-shadow: 0 0 10px #00f0ff;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.icon { font-size: 24px; }
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: -16px; /* colle sous le h1 */
+}
+
+/* ============================================================
+   ZONE MOT DE PASSE
+   ============================================================ */
+.password-zone {
+  display: flex;
+  align-items: center;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.password-zone:focus-within,
+.password-zone:has(input:not(:placeholder-shown)) {
+  border-color: rgba(57,211,83,0.4);
+  box-shadow: 0 0 0 3px rgba(57,211,83,0.06);
 }
 
 #password {
-    background: #162447;
-    border: navajowhite;
-    padding: 12px 20px;
-    font-size: 1.2rem;
-    color: #fff;
-    width: 300px;
-    text-align: center;
-    margin-bottom: 20px;
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 14px 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px;
+  color: var(--green);
+  letter-spacing: 1.5px;
+  /* Animation de clignotement du curseur */
+  caret-color: var(--green);
 }
 
-/* Container pour les boutons */
-.actions {
-    display: flex;
-    gap: 10px;
-    /* espace entre les boutons */
-    margin-bottom: 20px;
+#password::placeholder {
+  color: #2d333b;
+  letter-spacing: 0;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
 }
 
-
+/* Bouton copier */
 #btn-copy {
-    background: #00f0ff;
-    color: #1a1a2e;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+  background: none;
+  border: none;
+  border-left: 1px solid var(--card-border);
+  padding: 0 16px;
+  height: 100%;
+  min-height: 50px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition), background var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#btn-copy:hover {
-    background: #00cfff;
-    /* léger éclaircissement au survolement */
+#btn-copy:hover { color: var(--green); background: rgba(57,211,83,0.05); }
+#btn-copy.copied { color: var(--green); }
+
+/* ============================================================
+   BARRE DE FORCE
+   ============================================================ */
+.strength-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: -12px; /* rapprocher du champ */
 }
 
+.strength-track {
+  flex: 1;
+  height: 4px;
+  background: #1c2128;
+  border-radius: 4px;
+  overflow: hidden;
+}
 
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width 0.4s ease, background 0.4s ease;
+}
+
+/* Couleurs selon la force */
+.strength-fill.weak   { background: #f85149; width: 25%; }
+.strength-fill.fair   { background: #e3b341; width: 50%; }
+.strength-fill.good   { background: #58a6ff; width: 75%; }
+.strength-fill.strong { background: var(--green); width: 100%; }
+
+.strength-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  width: 52px;
+  text-align: right;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+.strength-label.weak   { color: #f85149; }
+.strength-label.fair   { color: #e3b341; }
+.strength-label.good   { color: #58a6ff; }
+.strength-label.strong { color: var(--green); }
+
+/* ============================================================
+   OPTIONS
+   ============================================================ */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Slider longueur */
+.option-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-row label {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.option-row label strong {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: var(--green);
+}
+
+#length-slider {
+  width: 100%;
+  accent-color: var(--green);
+  cursor: pointer;
+  height: 4px;
+}
+
+/* Checkboxes */
+.checkboxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted);
+  user-select: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+}
+
+.checkbox-item:hover {
+  background: rgba(255,255,255,0.03);
+  border-color: var(--card-border);
+  color: var(--text);
+}
+
+.checkbox-item input[type="checkbox"] {
+  display: none; /* on cache la case native */
+}
+
+/* Case à cocher personnalisée */
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #30363d;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  background: transparent;
+}
+
+/* Quand la case est cochée */
+.checkbox-item input:checked + .checkbox-custom {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+/* La coche ✓ */
+.checkbox-item input:checked + .checkbox-custom::after {
+  content: '';
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid #090c0f;
+  border-bottom: 2px solid #090c0f;
+  transform: rotate(-45deg) translateY(-1px);
+  display: block;
+}
+
+.checkbox-item em {
+  font-style: normal;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #3d444d;
+  margin-left: 2px;
+}
+
+/* ============================================================
+   BOUTON PRINCIPAL
+   ============================================================ */
 #btn-generate {
-    background: #e43f5a;
-    color: #fff;
-    border: none;
-    padding: 12px 25px;
-    font-size: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+  width: 100%;
+  background: var(--green);
+  color: #090c0f;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Effet de brillance au survol */
+#btn-generate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
 }
 
 #btn-generate:hover {
-    background: #ff6b81;
+  background: #4ae868;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(57,211,83,0.3);
+}
+
+#btn-generate:hover::after {
+  transform: translateX(100%);
+}
+
+#btn-generate:active { transform: translateY(0); }
+
+/* Animation "pulse" au clic */
+#btn-generate.pulse {
+  animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================================
+   FOOTER DE LA CARTE
+   ============================================================ */
+.card-footer {
+  padding: 12px 28px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.version {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  background: var(--green-dim);
+  color: var(--green);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+  .card-body { padding: 24px 20px 20px; }
+  .checkboxes { grid-template-columns: 1fr; }
+  .card-footer { flex-direction: column; gap: 6px; text-align: center; }
 }
